@@ -1,6 +1,7 @@
 VALUE LABELS
 # use levels(da36151.0001$"column name") in R to get this.
 # also available in the 36151-0001-Setup.sps file.
+# * means removed from final file
 ➤ WS4: Occupation
 —————000: Physical scientists
 —————001: Physical sci tech
@@ -96,12 +97,12 @@ VALUE LABELS
 —————099: Labour nec
 —————100: New workers
 —————101: Unidentifiable occ
-—————109: No occupation
-—————111: Housewife
-—————112: Student/ too young
-—————113: Retired/ too old
-—————114: Disabled
-—————115: Out of labour
+*—————109: No occupation
+*—————111: Housewife
+*—————112: Student/ too young
+*—————113: Retired/ too old
+*—————114: Disabled
+*—————115: Out of labour
 —————119: Other
 
 ➤ WS5: Industry

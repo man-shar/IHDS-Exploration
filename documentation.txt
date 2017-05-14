@@ -15,3 +15,6 @@ Final file has 53300 persons
 #Cleared -> IDPERSON(Person id Unique) vs PERSONID(Roster ID within 2012 household). Use IDPERSON as it is unique. IDPERSON constructed using PERSONID.
 #Cleared -> ID13(Caste), ID11(Religion) and GROUPS(caste and religion)
 #Cleared -> WSEARN(Annual earnings: person total) and WS10ANNUAL(Annual cash wages)
+
+#Fields to remove
+-> remove No occupation, Housewife, Student/too young, Retired/ too old, Disabled, Out of labour from "Occupation"
