@@ -9,7 +9,8 @@ keeps = c("STATEID,"DISTID", "PSUID", "HHID", "HHSPLITID", "PERSONID", "IDPERSON
 -> ws5 : Industry
 -> ws13 : Casual Job
 -> ws14 : govt, nrega, private
-Final file has 53300 persons
+✗Final file has 53300 persons✖
+Final file has 53252 persons
 
 #Confusions
 #Cleared -> IDPERSON(Person id Unique) vs PERSONID(Roster ID within 2012 household). Use IDPERSON as it is unique. IDPERSON constructed using PERSONID.
@@ -18,3 +19,11 @@ Final file has 53300 persons
 
 #Fields to remove
 -> remove No occupation, Housewife, Student/too young, Retired/ too old, Disabled, Out of labour from "Occupation"
+-> remove NA fields fom WS4 and WS5
+-> Merged industries to keep:
+--------• 00: Agriculture
+--------• 50: Construction
+--------• 92: Education
+--------• 70: Land Transport/merge to transport
+--------• 37: Manu. transport equip/ merge with manu.
+--------• 90: Public admin NO IDEA

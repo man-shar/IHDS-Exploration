@@ -106,74 +106,81 @@ VALUE LABELS
 —————119: Other
 
 ➤ WS5: Industry
-—————00: Agriculture
-—————01: Plantations
-—————02: Livestock
-—————03: Ag services
-—————04: Hunting
-—————05: Forestry
-—————06: Fishing
-—————10: Coal mining
-—————11: Petroleum extract
-—————12: Iron mining
-—————13: Other metal mining
-—————14: Uranium mining
-—————15: Nonmetal mining
-—————19: Mining services
-—————20: Manf food products
-—————22: Manf bev/tobacco
-—————23: Manf cotton textiles
-—————24: Manf wool/silk/etc
-—————25: Manf jute
-—————26: Manf apparel
-—————27: Manf wood/furniture
-—————28: Manf paper/publish
-—————29: Manf leather
-—————30: Manf chemicals
-—————31: Manf rubber/plastic
-—————32: Manf mineral
-—————33: Manf basic metal
-—————34: Manf metal products
-—————35: Manf machinery
-—————37: Manf transport equip
-—————38: Manf other
-—————39: Repair capital goods
-—————40: Electricity
-—————41: Gas/steam
-—————42: Water works
-—————43: Other energy
-—————50: Construction
-—————51: Allied construction
-—————60: Whsl ag/textiles
-—————61: Whsl basic goods
-—————62: Whsl machinery
-—————63: Whsl nec
-—————64: Manf agents
-—————65: Retail food
-—————66: Retail textiles
-—————67: Retail household
-—————68: Retail nec
-—————69: Restaurants/hotels
-—————70: Land transport
-—————71: Water transport
-—————72: Air transport
-—————73: Transport nec
-—————74: Storage
-—————75: Communication
-—————80: Banking
-—————81: Insurance
-—————82: Real estate
-—————83: Legal
-—————84: Lotteries
-—————85: Renting
-—————89: Business services
-—————90: Public admin
-—————91: Sanitary
-—————92: Education
-—————93: Medical
-—————94: Community
-—————95: Rec/culture
-—————96: Personal services
-—————97: Repair services
-—————98: International
-—————99: Services nec
+—————00: Agriculture  --------|
+—————01: Plantations  --------|------⚙ Agriculture 0
+—————02: Livestock  ----------|
+—————03: Ag services  --------|
+—————04: Hunting  -------|
+—————05: Forestry  ------|---⚙HFF 1
+—————06: Fishing  -------|
+
+—————10: Coal mining  -----------------|
+—————11: Petroleum extract  -----------|
+—————12: Iron mining  -----------------|
+—————13: Other metal mining  ----------|-----⚙ Mining 2
+—————14: Uranium mining  --------------|
+—————15: Nonmetal mining  -------------|
+—————19: Mining services  -------------|
+
+—————20: Manf food products  ----------------------------|
+—————22: Manf bev/tobacco  ------------------------------|
+—————23: Manf cotton textiles  --------------------------|
+—————24: Manf wool/silk/etc  ----------------------------|
+—————25: Manf jute  -------------------------------------|
+—————26: Manf apparel  ----------------------------------|
+—————27: Manf wood/furniture  ---------------------------|
+—————28: Manf paper/publish  ----------------------------|
+—————29: Manf leather  ----------------------------------|
+—————30: Manf chemicals  --------------------------------|
+—————31: Manf rubber/plastic  ---------------------------|
+—————32: Manf mineral  ----------------------------------|
+—————33: Manf basic metal  ------------------------------|
+—————34: Manf metal products  ---------------------------|
+—————35: Manf machinery  --------------------------------|-------⚙ Manufacturing 3
+—————37: Manf transport equip  --------------------------|
+—————38: Manf other  ------------------------------------|
+—————39: Repair capital goods----------------------------|
+                                                         |
+—————40: Electricity  --------|                          |
+—————41: Gas/steam  ----------|                          |
+—————42: Water works  --------|------⚙ Energy 4          |
+—————43: Other energy  -------|                          |
+                                                         |
+—————50: Construction  -----------|                      |
+—————51: Allied construction  ----|------⚙ Construction 5|
+—————60: Whsl ag/textiles----|                           |
+—————61: Whsl basic goods----|-----⚙ Wholesale 6         |
+—————62: Whsl machinery------|                           |
+—————63: Whsl nec------------|                           |
+—————64: Manf agents-------------------------------------|
+
+—————65: Retail food  ------------------------|
+—————66: Retail textiles  --------------------|
+—————67: Retail household  -------------------|-----⚙ Retail 4
+—————68: Retail nec  -------------------------|
+—————69: Restaurants/hotels  -----------------|
+
+—————70: Land transport  ----------|
+—————71: Water transport  ---------|
+—————72: Air transport  -----------|------⚙ Transport 5
+—————73: Transport nec  -----------|
+
+—————74: Storage  ----------------|
+—————75: Communication  ----------|
+—————80: Banking  ----------------|
+—————81: Insurance  --------------|
+—————82: Real estate  ------------|
+—————83: Legal  ------------------|
+—————84: Lotteries  --------------|
+—————85: Renting  ----------------|
+—————89: Business services  ------|
+—————90: Public admin  -----------|--------⚙ Others 6
+—————91: Sanitary  ---------------|
+—————92: Education  --------------|
+—————93: Medical  ----------------|
+—————94: Community  --------------|
+—————95: Rec/culture  ------------|
+—————96: Personal services  ------|
+—————97: Repair services  --------|
+—————98: International  ----------|
+—————99: Services nec  -----------|
