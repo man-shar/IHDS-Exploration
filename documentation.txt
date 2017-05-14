@@ -1,0 +1,17 @@
+#fields kept
+keeps = c("STATEID,"DISTID", "PSUID", "HHID", "HHSPLITID", "PERSONID", "IDPERSON", "WS3NM", "DIST01", "DISTRICT", "RO3", "RO5", "ED2", "ED3", "EDUC7", "ED12", "ID11", "ID13", "GROUPS", "WS4", "WS5", "WS7", "WS7MONTHS", "WS8", "WS8YEAR",  "WS9", "WS10", "WS10ANNUAL, "WS13", "WS14", "WSEARN", "WSEARNHOURLY")
+
+#filters
+-> educ7 : Education, completed years
+-> id13 : Caste
+-> id11 : Religion
+-> ws4 : Occupational job
+-> ws5 : Industry
+-> ws13 : Casual Job
+-> ws14 : govt, nrega, private
+Final file has 53300 persons
+
+#Confusions
+#Cleared -> IDPERSON(Person id Unique) vs PERSONID(Roster ID within 2012 household). Use IDPERSON as it is unique. IDPERSON constructed using PERSONID.
+#Cleared -> ID13(Caste), ID11(Religion) and GROUPS(caste and religion)
+#Cleared -> WSEARN(Annual earnings: person total) and WS10ANNUAL(Annual cash wages)

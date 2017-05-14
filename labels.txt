@@ -1,0 +1,178 @@
+VALUE LABELS
+# use levels(da36151.0001$"column name") in R to get this.
+# also available in the 36151-0001-Setup.sps file.
+➤ WS4: Occupation
+—————000: Physical scientists
+—————001: Physical sci tech
+—————002: Engineers
+—————003: Eng. tech
+—————004: Air/ship officers
+—————005: Life scientists
+—————006: Life science tech
+—————007: Physicians
+—————008: Nursing
+—————009: Other scientific
+—————010: Statisticians
+—————011: Economists
+—————012: Accountants
+—————013: Social scientists
+—————014: Lawyers
+—————015: Teachers
+—————016: Journalists
+—————017: Artists
+—————018: Performers
+—————019: Professional nec
+—————020: Elected officials
+—————021: Govt officials
+—————022: Mgr Whsl/retail
+—————023: Mgr finance
+—————024: Mgr manf
+—————025: Mgr transp/commun
+—————026: Mgr service
+—————029: Managerial nec
+—————030: Clerical supe
+—————031: Village officials
+—————032: Typists
+—————033: Bookeepers
+—————034: Computing op
+—————035: Clerical nec
+—————036: Transp/commun supe
+—————037: Transp conductors
+—————038: Mail distributors
+—————039: Telephone op
+—————040: Shopkeepers
+—————041: Manuf agents
+—————042: Technical sales
+—————043: Sales, shop
+—————044: FIRE sales
+—————045: Money lenders
+—————049: Sales, nec
+—————050: Hotel/restaurant
+—————051: House keepers
+—————052: Cooks/waiters
+—————053: Maids
+—————054: Sweepers
+—————055: Launderers
+—————056: Barbers
+—————057: Police
+—————059: Service nec
+—————060: Farm manager
+—————061: Cultivators
+—————062: Other farmers
+—————063: Ag labour
+—————064: Plantation lab
+—————065: Other farm
+—————066: Forestry
+—————067: Hunters
+—————068: Fishermen
+—————071: Miners
+—————072: Metal workers
+—————073: Wood/paper
+—————074: Chemical
+—————075: Textile
+—————076: Tanners
+—————077: Food
+—————078: Tobacco
+—————079: Tailors
+—————080: Shoe makers
+—————081: Carpenters
+—————082: Stone cutters
+—————083: Machine tool op
+—————084: Assemblers
+—————085: Electrical
+—————086: Cinema op
+—————087: Plumbers/welders
+—————088: Jewellery
+—————089: Potters
+—————090: Rubber/plastic
+—————091: Paper
+—————092: Printing
+—————093: Painters
+—————094: Production nec
+—————095: Construction
+—————096: Boilermen
+—————097: Loaders
+—————098: Drivers
+—————099: Labour nec
+—————100: New workers
+—————101: Unidentifiable occ
+—————109: No occupation
+—————111: Housewife
+—————112: Student/ too young
+—————113: Retired/ too old
+—————114: Disabled
+—————115: Out of labour
+—————119: Other
+
+➤ WS5: Industry
+—————00: Agriculture
+—————01: Plantations
+—————02: Livestock
+—————03: Ag services
+—————04: Hunting
+—————05: Forestry
+—————06: Fishing
+—————10: Coal mining
+—————11: Petroleum extract
+—————12: Iron mining
+—————13: Other metal mining
+—————14: Uranium mining
+—————15: Nonmetal mining
+—————19: Mining services
+—————20: Manf food products
+—————22: Manf bev/tobacco
+—————23: Manf cotton textiles
+—————24: Manf wool/silk/etc
+—————25: Manf jute
+—————26: Manf apparel
+—————27: Manf wood/furniture
+—————28: Manf paper/publish
+—————29: Manf leather
+—————30: Manf chemicals
+—————31: Manf rubber/plastic
+—————32: Manf mineral
+—————33: Manf basic metal
+—————34: Manf metal products
+—————35: Manf machinery
+—————37: Manf transport equip
+—————38: Manf other
+—————39: Repair capital goods
+—————40: Electricity
+—————41: Gas/steam
+—————42: Water works
+—————43: Other energy
+—————50: Construction
+—————51: Allied construction
+—————60: Whsl ag/textiles
+—————61: Whsl basic goods
+—————62: Whsl machinery
+—————63: Whsl nec
+—————64: Manf agents
+—————65: Retail food
+—————66: Retail textiles
+—————67: Retail household
+—————68: Retail nec
+—————69: Restaurants/hotels
+—————70: Land transport
+—————71: Water transport
+—————72: Air transport
+—————73: Transport nec
+—————74: Storage
+—————75: Communication
+—————80: Banking
+—————81: Insurance
+—————82: Real estate
+—————83: Legal
+—————84: Lotteries
+—————85: Renting
+—————89: Business services
+—————90: Public admin
+—————91: Sanitary
+—————92: Education
+—————93: Medical
+—————94: Community
+—————95: Rec/culture
+—————96: Personal services
+—————97: Repair services
+—————98: International
+—————99: Services nec
