@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <head>
 	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="https://unpkg.com/d3-sankey@0"></script>
+	<link rel="stylesheet" type="text/css" href="sankey.css">
+
 </head>
 <body>
 	<div class="sankey-container">
@@ -22,22 +25,11 @@
 			<option>
 				<label value="All">All</label>
 			</option>
-			<option value="0">
+			<option value="1">
 				<label>Male</label>
 			</option>
-			<option value="1">
+			<option value="2">
 				<label>Female</label>
-			</option>
-		</select>
-		<select id="state_choice" onChange="makeChart.createSankey()">
-			<option>
-				<label value="All">All</label>
-			</option>
-			<option value="9">
-				<label>UP</label>
-			</option>
-			<option value="7">
-				<label>Delhi</label>
 			</option>
 		</select>
 		<select id="education_choice" onChange="makeChart.createSankey()">
@@ -78,6 +70,6 @@
 			</option>
 		</select>
 	</div>
-	<script type="text/javascript" src="sankey.js"></script>
 	<script type="text/javascript" src="codes.js"></script>
+	<script type="text/javascript" src="sankey.js"></script>
 </body>
