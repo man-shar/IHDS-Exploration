@@ -3,6 +3,81 @@
 	<script src="https://d3js.org/d3.v4.js"></script>
 </head>
 <body>
-	<div class="sankey-container"></div>
+	<div class="sankey-container">
+		<select id="age_choice" onChange="makeChart.createSankey()">
+			<option>
+				<label value="All">All</label>
+			</option>
+			<option>
+				<label>18</label>
+			</option>
+			<option>
+				<label>19</label>
+			</option>
+			<option>
+				<label>20</label>
+			</option>
+		</select>
+		<select id="sex_choice" onChange="makeChart.createSankey()">
+			<option>
+				<label value="All">All</label>
+			</option>
+			<option value="0">
+				<label>Male</label>
+			</option>
+			<option value="1">
+				<label>Female</label>
+			</option>
+		</select>
+		<select id="state_choice" onChange="makeChart.createSankey()">
+			<option>
+				<label value="All">All</label>
+			</option>
+			<option value="9">
+				<label>UP</label>
+			</option>
+			<option value="7">
+				<label>Delhi</label>
+			</option>
+		</select>
+		<select id="education_choice" onChange="makeChart.createSankey()">
+			<option>
+				<label value="All">All</label>
+			</option>
+			<option value="15">
+				<label>Graduate</label>
+			</option>
+			<option value="16">
+				<label>Post Graduate</label>
+			</option>
+		</select>
+		<select id="rnc_choice" onChange="makeChart.createSankey()">
+			<option>
+				<label value="All">All</label>
+			</option>
+			<option value="1">
+				<label>Brahmin</label>
+			</option>
+			<option value="2">
+				<label>Forward caste</label>
+			</option>
+			<option value="3">
+				<label>OBC</label>
+			</option>
+			<option value="4">
+				<label>Dalit</label>
+			</option>
+			<option value="5">
+				<label>Adivasi</label>
+			</option>
+			<option value="6">
+				<label>Muslim</label>
+			</option>
+			<option value="7">
+				<label>Christian/Sikh/Jain</label>
+			</option>
+		</select>
+	</div>
 	<script type="text/javascript" src="sankey.js"></script>
+	<script type="text/javascript" src="codes.js"></script>
 </body>

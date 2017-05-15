@@ -156,13 +156,13 @@ VALUE LABELS
 
 —————65: Retail food  ------------------------|
 —————66: Retail textiles  --------------------|
-—————67: Retail household  -------------------|-----⚙ Retail 4
+—————67: Retail household  -------------------|-----⚙ Retail 7
 —————68: Retail nec  -------------------------|
 —————69: Restaurants/hotels  -----------------|
 
 —————70: Land transport  ----------|
 —————71: Water transport  ---------|
-—————72: Air transport  -----------|------⚙ Transport 5
+—————72: Air transport  -----------|------⚙ Transport 8
 —————73: Transport nec  -----------|
 
 —————74: Storage  ----------------|
@@ -174,7 +174,7 @@ VALUE LABELS
 —————84: Lotteries  --------------|
 —————85: Renting  ----------------|
 —————89: Business services  ------|
-—————90: Public admin  -----------|--------⚙ Others 6
+—————90: Public admin  -----------|--------⚙ Others 9
 —————91: Sanitary  ---------------|
 —————92: Education  --------------|
 —————93: Medical  ----------------|

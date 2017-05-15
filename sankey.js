@@ -4,121 +4,71 @@ ro3 -> Sex
 ro5 -> age
 groups -> religion and caste
 */ 
-industry_labels = {
-	"0": 0
-	"1": 0
-	"2": 0
-	"3": 0
-	"4": 1
-	"5": 1
-	"6": 1
-	"7": -1
-	"8": -1
-	"9": -1
-	"10": 2
-	"11": 2
-	"12": 2
-	"13": 2
-	"14": 2
-	"15": 2
-	"16": 2
-	"17": 2
-	"18": 2
-	"19": 2
-	"20": 3
-	"21": 3
-	"22": 3
-	"23": 3
-	"24": 3
-	"25": 3
-	"26": 3
-	"27": 3
-	"28": 3
-	"29": 3
-	"30": 3
-	"31": 3
-	"32": 3
-	"33": 3
-	"34": 3
-	"35": 3
-	"36": 3
-	"37": 3
-	"38": 3
-	"39": 3
-	"40": 4
-	"41": 4
-	"42": 4
-	"43": 4
-	"44": -1
-	"45": -1
-	"46": -1
-	"47": -1
-	"48": -1
-	"49": -1
-	"50": 5
-	"51": 5
-	"52": 6
-	"53": 6
-	"54": 6
-	"55": 6
-	"56": 6
-	"57": 6
-	"58": 6
-	"59": 6
-	"60": 6
-	"61": 6
-	"62": 6
-	"63": 6
-	"64": 3
-	"65": 4
-	"66": 4
-	"67": 4
-	"68": 4
-	"69": 4
-	"70": 5
-	"71": 5
-	"72": 5
-	"73": 5
-	"74": 6
-	"75": 6
-	"76": 6
-	"77": 6
-	"78": 6
-	"79": 6
-	"80": 6
-	"81": 6
-	"82": 6
-	"83": 6
-	"84": 6
-	"85": 6
-	"86": 6
-	"87": 6
-	"88": 6
-	"89": 6
-	"90": 6
-	"91": 6
-	"92": 6
-	"93": 6
-	"94": 6
-	"95": 6
-	"96": 6
-	"97": 6
-	"98": 6
-	"99": 6
-};
 
-q = d3.queue();
-q.defer(d3.csv, "final.csv")
+function redraw(people){
+	
+    var people;
 
-function createSankeyJson(nest) {
+	q = d3.queue();
+	q.defer(d3.csv, "final.csv")
 
+	q.await(function(error, data) {
+		people = data;
+	});
+
+
+	function getData(sankeyData, filter_choices, level) {
+
+		debugger;
+		if(sankeyData[0]["key"])
+		{
+			for (var i = sankeyData.length - 1; i >= 0; i--) {
+				if(sankeyData[i]["key"]) {
+					if(sankeyData[i]["key"] === filter_choices[level])
+					{
+						debugger;
+						var final_data =  getData(sankeyData[i]["values"], filter_choices, ++level)
+						return final_data;
+					}
+				}
+			}
+		}
+		return sankeyData;
+	}
+
+	function createSankey() {
+		var age = document.getElementById("age_choice").value;
+		var sex = document.getElementById("sex_choice").value;
+		var state = document.getElementById("state_choice").value;
+		var education = document.getElementById("education_choice").value;
+		var rnc = document.getElementById("rnc_choice").value;
+
+		var chosen = [age, sex, state, education, rnc];
+		var choice_labels = ["RO5", "RO3", "STATEID", "EDUC7", "GROUPS"];
+
+		var entered_choice_labels = chosen.reduce(function(acc, choice, i) {
+			if (choice != "All")
+				acc.push(choice_labels[i]);
+			return acc;
+		}, []);
+		
+		var sankeyData = entered_choice_labels.reduce(function(acc, choice_label){
+			return acc.key(function(d) {
+				return d[choice_label];
+			});
+		}, d3.nest());
+
+		sankeyData = sankeyData.entries(people);
+
+		var filter_choices = chosen.filter(function(choice){
+			return choice !== "All";
+		});
+		
+		var final_data = getData(sankeyData, filter_choices, 0);
+		console.log(final_data);
+    }
+
+	return {createSankey: createSankey};
 }
 
-function mergeIndustries(people) {
-	console.log(people);
-}
-
-q.await(function(error, people) {
-	mergeIndustries(people);	
-})
-
+var makeChart = redraw();
