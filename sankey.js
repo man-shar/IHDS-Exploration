@@ -38,35 +38,31 @@ function redraw(people){
 		var temp_links = {};
 
 		sankeyJson.nodes  = [
-		    {"node": 0, "name":"People like you"},
-		    {"node": 1, "name": "Government"},
-            {"node": 2, "name": "Private"},
-            {"node": 3, "name": "Others"},
-		    {"node": 4, "name": "Agriculture"},
-            {"node": 5, "name": "HFF"},
-            {"node": 6, "name": "Mining"},
-            {"node": 7, "name": "Manufacturing"},
-            {"node": 8, "name": "Energy"},
-            {"node": 9, "name": "Construction"},
-            {"node": 10, "name": "Wholesale"},
-            {"node": 11, "name": "Retail"},
-            {"node": 12, "name": "Transport"},
-            {"node": 13, "name": "Others"}
+		    {"node": 0, "name": "Government"},
+            {"node": 1, "name": "Private"},
+            {"node": 2, "name": "Others"},
+		    {"node": 3, "name": "Agriculture"},
+            {"node": 4, "name": "HFF"},
+            {"node": 5, "name": "Mining"},
+            {"node": 6, "name": "Manufacturing"},
+            {"node": 7, "name": "Energy"},
+            {"node": 8, "name": "Construction"},
+            {"node": 9, "name": "Wholesale"},
+            {"node": 10, "name": "Retail"},
+            {"node": 11, "name": "Transport"},
+            {"node": 12, "name": "Others"}
 		];
 
 		for (var i = data.length - 1; i >= 0; i--) {
 
-			var link_hash = "0-" + (+sector_codes[data[i]["WS14"]] + 1);
+			link_hash = sector_codes[data[i]["WS14"]] + "-" + (+industry_codes[data[i]["WS5"]] + 3);
 			if(!temp_links[link_hash])
 				temp_links[link_hash] = {"name": link_hash, "value": 1};
 
-			temp_links[link_hash]["value"] += 1;
-
-			link_hash = sector_codes[data[i]["WS14"]] + 1 + "-" + (+industry_codes[data[i]["WS5"]] + 4);
-			if(!temp_links[link_hash])
-				temp_links[link_hash] = {"name": link_hash, "value": 1};
-
-			temp_links[link_hash]["value"] += 1;
+            else
+            {
+			    temp_links[link_hash]["value"] += 1;
+            }
 
 		}
 		
