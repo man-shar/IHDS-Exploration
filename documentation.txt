@@ -28,3 +28,4 @@ Final file has 53252 persons
 --------• 37: Manu. transport equip/ merge with manu.
 --------• 90: Public admin NO IDEA
 #Data not representative at state level. Remove state from input.
+-> remove NA fields from "WSEARN".
