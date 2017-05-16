@@ -5,43 +5,45 @@ ro5 -> age
 groups -> religion and caste
 */ 
 
-function redraw(people){
-	
+function redraw(people) {
+    
     var people;
 
-	q = d3.queue();
-	q.defer(d3.csv, "final.csv")
+    q = d3.queue();
+    q.defer(d3.csv, "final.csv")
 
-	q.await(function(error, data) {
-		people = data;
-	});
+    q.await(function(error, data) {
+        people = data;
+    });
 
 
-	function getData(sankeyData, filter_choices, level) {
-		if(sankeyData[0]["key"])
-		{
-			for (var i = sankeyData.length - 1; i >= 0; i--) {
-			    if(sankeyData[i]["key"] === filter_choices[level])
-			    {
-			    	var final_data =  getData(sankeyData[i]["values"], filter_choices, ++level);
-			    	return final_data;
-			    }
-			}
-			return "No Match"
-		}
-		return sankeyData;
-	}
+    function getData(sankeyData, filter_choices, level) {
+        if(sankeyData[0]["key"])
+        {
+            for (var i = sankeyData.length - 1; i >= 0; i--) {
+                if(sankeyData[i]["key"] === filter_choices[level])
+                {
+                    var final_data =  getData(sankeyData[i]["values"], filter_choices, ++level);
+                    if(final_data === "No Match")
+                        return "No Match";
+                    return final_data;
+                }
+            }
+            return "No Match"
+        }
+        return sankeyData;
+    }
 
-	function createSankeyJson(data) {
+    function createSankeyJson(data) {
 
-		var sankeyJson = {"nodes": [], "links": []};
-		var temp_links = {};
+        var sankeyJson = {"nodes": [], "links": []};
+        var temp_links = {};
 
-		sankeyJson.nodes  = [
-		    {"node": 0, "name": "Government"},
+        sankeyJson.nodes  = [
+            {"node": 0, "name": "Government"},
             {"node": 1, "name": "Private"},
             {"node": 2, "name": "Others"},
-		    {"node": 3, "name": "Agriculture"},
+            {"node": 3, "name": "Agriculture"},
             {"node": 4, "name": "HFF"},
             {"node": 5, "name": "Mining"},
             {"node": 6, "name": "Manufacturing"},
@@ -51,142 +53,237 @@ function redraw(people){
             {"node": 10, "name": "Retail"},
             {"node": 11, "name": "Transport"},
             {"node": 12, "name": "Others"}
-		];
+        ];
 
-		for (var i = data.length - 1; i >= 0; i--) {
+        for (var i = data.length - 1; i >= 0; i--) {
 
-			link_hash = sector_codes[data[i]["WS14"]] + "-" + (+industry_codes[data[i]["WS5"]] + 3);
-			if(!temp_links[link_hash])
-				temp_links[link_hash] = {"name": link_hash, "value": 1};
+            link_hash = sector_codes[data[i]["WS14"]] + "-" + (+industry_codes[data[i]["WS5"]] + 3);
+            if(!temp_links[link_hash])
+                temp_links[link_hash] = {"name": link_hash, "value": 1};
+
 
             else
-            {
-			    temp_links[link_hash]["value"] += 1;
-            }
+                temp_links[link_hash]["value"] += 1;
 
-		}
-		
-		for (var hash in temp_links) {
-			var nodes = temp_links[hash]["name"].split("-");
+        }
+        
+        for (var hash in temp_links) {
+            var nodes = temp_links[hash]["name"].split("-");
 
-			var source = nodes[0];
-			var target = nodes[1];
+            var source = nodes[0];
+            var target = nodes[1];
 
-			var linkForJson = {
-				"source": +source, "target": +target, "value": +temp_links[hash]["value"]
-			};
+            var linkForJson = {
+                "source": +source, "target": +target, "value": +temp_links[hash]["value"]
+            };
 
-		    sankeyJson["links"].push(linkForJson);
-		}
+            sankeyJson["links"].push(linkForJson);
+        }
+        return sankeyJson;
+    }
 
-		console.log(sankeyJson);
+    function createSankeyData() {
+        var age = document.getElementById("age_choice").value;
+        var sex = document.getElementById("sex_choice").value;
+        var education = document.getElementById("education_choice").value;
+        var rnc = document.getElementById("rnc_choice").value;
 
-		return sankeyJson;
-	}
+        var chosen = [age, sex, education, rnc];
+        var choice_labels = ["RO5", "RO3", "EDUC7", "GROUPS"];
 
-	function createSankeyData() {
-		var age = document.getElementById("age_choice").value;
-		var sex = document.getElementById("sex_choice").value;
-		var education = document.getElementById("education_choice").value;
-		var rnc = document.getElementById("rnc_choice").value;
+        var entered_choice_labels = chosen.reduce(function(acc, choice, i) {
+            if (choice != "All")
+                acc.push(choice_labels[i]);
+            return acc;
+        }, []);
+        
+        var sankeyData = entered_choice_labels.reduce(function(acc, choice_label){
+            return acc.key(function(d) {
+                return d[choice_label];
+            });
+        }, d3.nest());
 
-		var chosen = [age, sex, education, rnc];
-		var choice_labels = ["RO5", "RO3", "EDUC7", "GROUPS"];
+        sankeyData = sankeyData.entries(people);
 
-		var entered_choice_labels = chosen.reduce(function(acc, choice, i) {
-			if (choice != "All")
-				acc.push(choice_labels[i]);
-			return acc;
-		}, []);
-		
-		var sankeyData = entered_choice_labels.reduce(function(acc, choice_label){
-			return acc.key(function(d) {
-				return d[choice_label];
-			});
-		}, d3.nest());
+        var filter_choices = chosen.filter(function(choice){
+            return choice !== "All";
+        });
 
-		sankeyData = sankeyData.entries(people);
+        var final_data = getData(sankeyData, filter_choices, 0);
 
-		var filter_choices = chosen.filter(function(choice){
-			return choice !== "All";
-		});
+        //console.log(filter_choices, entered_choice_labels, final_data);
 
-		var final_data = getData(sankeyData, filter_choices, 0);
-
-		return final_data;
+        return final_data;
     }
 
     function createSankey() {
 
-    	var sankeyData = createSankeyData();
-    	if(sankeyData === "No Match")
+        var sankeyData = createSankeyData();
+
+        if(sankeyData === "No Match")
     	    return "No People"
 
-    	var sankeyJson = createSankeyJson(sankeyData);
+        var sankeyJson = createSankeyJson(sankeyData);
 
-    	var margin = {top: 10, right: 10, bottom: 10, left: 10},
+        var margin = {top: 10, right: 10, bottom: 10, left: 10},
             width = 700 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom,
             color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    	var sankey = d3.sankey()
-    		.nodeWidth(36)
-    		.nodePadding(5)
-    		.size([width, height]);
+        var sankey = d3.sankey()
+            .nodeWidth(36)
+            .nodePadding(5)
+            .size([width, height]);
 
-    	var path = sankey.link();
+        var path = sankey.link();
 
-    	//remove previous Sankey
+        var svg, links, nodes;
 
-    	d3.select(".sankey-container").select("svg").remove();
+        //remove previous Sankey
 
-    	var svg = d3.select(".sankey-container").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        if(d3.select(".sankey-container").select("svg").empty())
+        {
+            svg = d3.select(".sankey-container").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        }
+
+        else{
+            svg = d3.select(".sankey-container").select("svg").select("g");
+        }
 
         sankey
             .nodes(sankeyJson.nodes)
             .links(sankeyJson.links)
             .layout(10);
 
-        var link = svg.append("g").selectAll(".link")
-            .data(sankeyJson.links)
-            .enter().append("path")
-            .attr("d", path)
-            .attr("class", "link")
-            .style("stroke-width", function(d) { return Math.max(1, d.dy); })
-            .sort(function(a, b) { return b.dy - a.dy; });
+        if(d3.select(".links_g").empty()) {
+            links = svg.append("g").attr("class", "links_g").selectAll(".link")
+                .data(sankeyJson.links, function(d) { var key = d.source.node + "-" + d.target.node; return key; });
+        }
 
-        link.append("title")
+        else
+        {
+            links = d3.select(".links_g").selectAll(".link").data(sankeyJson.links, function(d) { var key = d.source.node + "-" + d.target.node; return key; });
+        }
+
+		links.exit()
+			.transition()
+			.style("opacity", 1e-6)
+			.remove();
+
+		links
+			.transition()
+			.attr("d", path)
+			.style("stroke-width", function(d){ return Math.max(1, d.dy); })
+
+		links.enter().append("path")
+			.attr("class", "link")
+			.attr("d", path)
+			.style("stroke-width", function(d){ return Math.max(1, d.dy); })
+			.append("title")
             .text(function(d) {
-            	return d.source.name + " → " + d.target.name + "\n" + d.value;
+                return d.source.name + " → " + d.target.name + "\n" + d.value;
             });
 
-        var node = svg.append("g").selectAll(".node")
-            .data(sankeyJson.nodes)
-            .enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) {
-            	return "translate(" + d.x + "," + d.y + ")"; })
-            .on("start", function() {
-            	this.parentNode.appendChild(this);
-            });
+		// debugger;
 
-        node.append("rect")
-            .attr("height", function(d) { return d.dy; })
-            .attr("width", sankey.nodeWidth())
-            .style("fill", function(d) { 
-            	return d.color = color(d.name.replace(/ .*/, "")); })
+
+  //       var new_links = links.enter().append("path")
+  //           .attr("class", "link")
+  //           .style("stroke-width", function(d) { return Math.max(1, d.dy); });
+
+  //       debugger;
+
+  //       new_links
+  //           .transition()
+  //           .attr("d", path);
+
+  //       links.transition().attr("d", )
+
+        // new_links
+        //     .append("title")
+        //     .text(function(d) {
+        //         return d.source.name + " → " + d.target.name + "\n" + d.value;
+        //     });
+
+        if(d3.select(".nodes_g").empty()) {
+            nodes = svg.append("g").attr("class", "nodes_g").selectAll(".node")
+                .data(sankeyJson.nodes, function(d) { var key = d.node; return key;});
+        }
+
+        else
+        {
+            nodes = d3.select(".nodes_g").selectAll(".node").data(sankeyJson.nodes, function(d) { var key = d.node; return key; });
+        }
+
+        console.log(sankeyJson.nodes)
+
+
+        nodes.exit().remove();
+        
+
+        nodes
+        	.transition()
+        	.attr("y", function(d){ return d.y; })
+        	.attr("height", function(d){ return d.dy;})
+
+        nodes.enter().append("rect")
+        	.attr("class", "node")
+        	.attr("x", function(d){ return d.x; })
+        	.attr("y", function(d){ return d.y; })
+        	.attr("height", function(d){ return d.dy;})
+        	.attr("width", sankey.nodeWidth())
+        	.style("fill", function(d) { 
+                return d.color = color(d.name.replace(/ .*/, "")); })
             .style("stroke", "black")
+            .style("stroke-width", 0.4)
             .append("title")
             .text(function(d) { 
-	            return d.name + "\n" + d.value; });
+                return d.name + "\n" + d.value; });
 
-	}
+        // var new_nodes = nodes.enter().append("g")
+        //     .attr("class", "node");
 
-	return {createSankey: createSankey};
+        // new_nodes
+        //     .append("rect")
+        //     .attr("width", sankey.nodeWidth())
+        //     .style("fill", function(d) { 
+        //         return d.color = color(d.name.replace(/ .*/, "")); })
+        //     .style("stroke", "black");
+
+        // new_nodes
+        // 	// .selectAll("rect")
+        //     .transition()
+        //     .attr("transform", function(d) {
+        //         return "translate(" + d.x + "," + d.y + ")"; })
+
+        // //  new_nodes.
+
+        // // nodes
+        // //     .selectAll("rect")
+        // //     .attr("transform", function(d) {
+        // //         return "translate(" + d.x + "," + d.y + ")"; });
+
+        //     debugger;
+
+        // nodes.selectAll("rect").attr("height", function(d) { return d.dy; });
+
+
+
+        // new_nodes
+        //     .selectAll("rect")
+        //     .attr("height", function(d) { return d.dy; });
+
+        // new_nodes
+        //     .append("title")
+        //     .text(function(d) { 
+        //         return d.name + "\n" + d.value; });
+        }
+
+    return {createSankey: createSankey};
 }
     
 
