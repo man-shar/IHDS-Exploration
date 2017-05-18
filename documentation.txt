@@ -1,5 +1,5 @@
 #fields kept
-keeps = c("STATEID,"DISTID", "PSUID", "HHID", "HHSPLITID", "PERSONID", "IDPERSON", "WS3NM", "DIST01", "DISTRICT", "RO3", "RO5", "ED2", "ED3", "EDUC7", "ED12", "ID11", "ID13", "GROUPS", "WS4", "WS5", "WS7", "WS7MONTHS", "WS8", "WS8YEAR",  "WS9", "WS10", "WS10ANNUAL, "WS13", "WS14", "WSEARN", "WSEARNHOURLY")
+keeps = c("RO3", "RO5", "RO7", "EDUC7", "GROUPS", "WS4", "WS5", "WS14", "WSEARN", "URBAN4_2011")
 
 #filters
 -> educ7 : Education, completed years
@@ -29,3 +29,381 @@ Final file has 53252 persons
 --------• 90: Public admin NO IDEA
 #Data not representative at state level. Remove state from input.
 -> remove NA fields from "WSEARN".
+
+#Groupings RO7 and WS5:
+-> separate all into WS%NA and WS5notNA. After changing WS5 in WS5NA, will merge the two.
+From RO7:
+1 Cultivation
+2 Allied ag
+3 Ag wage labour
+4 Nonag wage labour
+5 Artisan/indpt work
+6 Small business
+7 Organized Business
+8 Salaried
+9 Profession
+10 Retired
+11 Housework
+12 Student
+13 Unemployed
+14 Too young/Unfit
+15 Others
+
+Initial 
+var industry_code_names = {
+    0: "Agriculture",
+    1: "HFF",
+    2: "Mining",
+    3: "Manufacturing",
+    4: "Energy",
+    5: "Construction",
+    6: "Wholesale",
+    7: "Retail",
+    8: "Transport",
+    9: "Others"
+};
+
+In WS5_NA - 
+• 1, 2, 3 -> WS5 is 0 (Agriculture) 
+	Command : WS5NA_RO7123 = within(WS5NA, {
+				WS5 = ifelse(WS5NA$RO7 == 1 | WS5NA$RO7 == 2 | WS5NA$RO7 == 3, 0, WS5NA$WS5)
+			})
+	Now WS5NA_RO7123 has 1, 2, 3 in RO7 set to WS5 = 0.
+	var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others"
+	};
+
+• 4 -> WS5 is 9 (Others) as only 1070.
+	Command : WS5NA_RO74 = within(WS5NA_RO7123, {
+                 WS5 = ifelse(WS5NA_RO7123$RO7 == 4, 9, WS5NA_RO7123$WS5)
+            })
+    Now WS5NA_RO74 has 4 in RO7 set to WS5 = 9.
+	var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	};
+
+• 5 -> WS5 is 9 (Others) as only 639.
+    Command: WS5NA_RO75 = within(WS5NA_RO74, {
+                WS5 = ifelse(WS5NA_RO74$RO7 == 5, 9, WS5NA_RO74$WS5)
+            })
+    Now WS5NA_RO74 has 5 in RO7 set to WS5 = 9.
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others"
+	};
+
+• 6, 7 -> WS5 is 10 (Business). New entry created in industry_code_names. TODO : Merge Business Services(89) in WS5notNA to this entry.
+    Command : WS5NA_RO767 = within(WS5NA_RO75, {
+        WS5 = ifelse(WS5NA_RO75$RO7 == 6 | WS5NA_RO75$RO7 == 7, 10, WS5NA_RO75$WS5)
+    })
+    Now WS5NA_RO767 has 6, 7 in RO7 set to WS5 = 10.
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business"
+	};
+
+• 8, 9 -> WS5 is 9 (Others). Only 576, 329.
+    Command : WS5NA_RO789 = within(WS5NA_RO767, {
+        WS5 = ifelse(WS5NA_RO767$RO7 == 8 | WS5NA_RO767$RO7 == 9, 9, WS5NA_RO767$WS5)
+    })
+    Now WS5NA_RO789 has 8, 9 in RO7 set to WS5 = 9.
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business"
+	};
+
+• 10 -> WS5 is 11 (Retired). New entry created in industry_code_names.
+	Command : WS5NA_RO710 = within(WS5NA_RO789, {
+        WS5 = ifelse(WS5NA_RO789$RO7 == 10, 11, WS5NA_RO789$WS5)
+        })
+     var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	};
+
+• 11 -> WS5 is 12 (Housework). New entry created in industry_code_names.
+	Command : WS5NA_RO711 = within(WS5NA_RO710, {
+        WS5 = ifelse(WS5NA_RO710$RO7 == 11, 12, WS5NA_RO710$WS5)
+        })
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework"
+	};
+
+• 12 -> WS5 is 13 (Student). New entry created in industry_code_names.
+	Command : WS5NA_RO712 = within(WS5NA_RO711, {
+        WS5 = ifelse(WS5NA_RO711$RO7 == 12, 13, WS5NA_RO711$WS5)
+        })
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework",
+	    13: "Student"
+	};
+
+• 13 -> WS5 is 14 (Unemployed). New entry created in industry_code_names.
+	Command : WS5NA_RO713 = within(WS5NA_RO712, {
+        WS5 = ifelse(WS5NA_RO712$RO7 == 13, 14, WS5NA_RO712$WS5)
+        })
+    var industry_code_names = {
+	    0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework",
+	    13: "Student",
+	    14: "Unemployed"
+	};
+
+• 14 -> WS5 is 15 (Too Young/Unfit). New entry created in industry_code_names.
+	Command : WS5NA_RO714 = within(WS5NA_RO713, {
+        WS5 = ifelse(WS5NA_RO713$RO7 == 14, 15, WS5NA_RO713$WS5)
+        })
+    var industry_code_names = {
+        0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework",
+	    13: "Student",
+	    14: "Unemployed",
+	    15: "Too Young/Unfit"
+    }
+
+• 15 -> WS5 is 9 (Others).
+	Command : WS5NA_RO715 = within(WS5NA_RO714, {
+        WS5 = ifelse(WS5NA_RO714$RO7 == 15, 9, WS5NA_RO714$WS5)
+        })
+    var industry_code_names = {
+        0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework",
+	    13: "Student",
+	    14: "Unemployed",
+	    15: "Too Young/Unfit"
+    }
+
+#These were in high numbers in Brahmin, Christians : Land Transport, Education and Public Admin. TODO: Create new entries in industry_code_names for these!
+
+Land Transport already merged in "Transport".
+
+var industry_code_names = {
+        0: "Agriculture",
+	    1: "HFF",
+	    2: "Mining",
+	    3: "Manufacturing",
+	    4: "Energy",
+	    5: "Construction",
+	    6: "Wholesale",
+	    7: "Retail",
+	    8: "Transport",
+	    9: "Others",
+	    10: "Business",
+	    11: "Retired"
+	    12: "Housework",
+	    13: "Student",
+	    14: "Unemployed",
+	    15: "Too Young/Unfit",
+	    17: "Education", // WS5 92
+	    18: "Public Admin" //WS5 90
+    }
+
+#Merging in WS5notNA. 
+• 0-3 -> WS5 is 0 (Agriculture).
+        Command : WS5notNA0123 = within(WS5notNA, {
+        WS5 = ifelse(WS5notNA$WS5 >= 0 & WS5notNA$WS5 <= 3, 0 , WS5notNA$WS5)
+        })
+
+• 4 - 6 -> WS5 is 1 (HFF).
+        Command : WS5notNA456 = within(WS5notNA0123, {
+        WS5 = ifelse(WS5notNA0123$WS5 >= 4 & WS5notNA0123$WS5 <= 6, 1 , WS5notNA0123$WS5)
+        })
+
+• 10 - 19 -> WS5 is 2 (Mining).
+        Command : WS5notNA1019 = within(WS5notNA456, {
+        WS5 = ifelse(WS5notNA456$WS5 >= 10 & WS5notNA456$WS5 <= 19, 2 , WS5notNA456$WS5)
+        })
+
+• 20-39 and 64 -> WS5 is 3 (Manufacturing).
+        Command : WS5notNA203964 = within(WS5notNA1019, {
+        WS5 = ifelse(WS5notNA1019$WS5 >= 20 & WS5notNA1019$WS5 <= 39, 3 , WS5notNA1019$WS5)
+        });
+        WS5notNA203964 = within(WS5notNA1019, {
+        WS5 = ifelse(WS5notNA1019$WS5 == 64, 3 , WS5notNA1019$WS5)
+        })
+
+• 40 - 43 -> WS5 is 4 (Energy).
+        Command : WS5notNA4043 = within(WS5notNA203964, {
+        WS5 = ifelse(WS5notNA203964$WS5 >= 40 & WS5notNA203964$WS5 <= 43, 4 , WS5notNA203964$WS5)
+        });
+
+• 50 - 51 -> WS5 is 5 (Construction).
+        Command : WS5notNA5051 = within(WS5notNA4043, {
+        WS5 = ifelse(WS5notNA4043$WS5 >= 50 & WS5notNA4043$WS5 <= 51, 5 , WS5notNA4043$WS5)
+        });
+
+• 60 - 63 -> WS5 is 6 (Wholesale).
+        Command : WS5notNA6063 = within(WS5notNA5051, {
+        WS5 = ifelse(WS5notNA5051$WS5 >= 60 & WS5notNA5051$WS5 <= 63, 6 , WS5notNA5051$WS5)
+        });
+
+• 65 - 69 -> WS5 is 7 (Retail).
+        Command : WS5notNA6569 = within(WS5notNA6063, {
+        WS5 = ifelse(WS5notNA6063$WS5 >= 65 & WS5notNA6063$WS5 <= 69, 7 , WS5notNA6063$WS5)
+        });
+
+• 70 - 73 -> WS5 is 8 (Transport).
+        Command : WS5notNA7073 = within(WS5notNA6569, {
+        WS5 = ifelse(WS5notNA6569$WS5 >= 70 & WS5notNA6569$WS5 <= 73, 8 , WS5notNA6569$WS5)
+        });
+
+• 74 - 85, 91, 93 - 99 -> WS5 is 9 (Others).
+        Command : WS5notNA7485919399 = within(WS5notNA7073, {
+        WS5 = ifelse(WS5notNA7073$WS5 >= 74 & WS5notNA7073$WS5 <= 85, 9 , WS5notNA7073$WS5)
+        });
+        WS5notNA7485919399 = within(WS5notNA7485919399, {
+        WS5 = ifelse(WS5notNA7485919399$WS5 == 91, 9 , WS5notNA7485919399$WS5)
+        });
+        WS5notNA7485919399 = within(WS5notNA7485919399, {
+        WS5 = ifelse(WS5notNA7485919399$WS5 >= 93 & WS5notNA7485919399$WS5 <= 99, 9 , WS5notNA7485919399$WS5)
+        });
+
+• 89 -> WS5 is 10 (Business).
+        Command : WS5notNA89 = within(WS5notNA7485919399, {
+        WS5 = ifelse(WS5notNA7485919399$WS5 == 89 , 10 , WS5notNA7485919399$WS5)
+        });
+
+• 90 -> WS5 is 17 (Public Admin).
+        Command : WS5notNA90 = within(WS5notNA89, {
+        WS5 = ifelse(WS5notNA89$WS5 == 90 , 17 , WS5notNA89$WS5)
+        });
+
+• 92 -> WS5 is 18 (Education).
+        Command : WS5notNA92 = within(WS5notNA90, {
+        WS5 = ifelse(WS5notNA90$WS5 == 92 , 18 , WS5notNA90$WS5)
+        });
+
+BUG IN THE 20-39 CATEGORY. Doing it again on WS5notNA92.
+        Command : WS5notNA892 = within(WS5notNA92, {
+        WS5 = ifelse(WS5notNA92$WS5 >= 20 & WS5notNA92$WS5 <= 39 , 3 , WS5notNA92$WS5)
+        });
+
+#merged WS5notNA92 and WS5NA_RO715 to data_final. 
+#Removed NA rows(count = 4) from data_final.
+    Command : data_final = data_final[complete.cases(data_final[, "WS5"]),]
+#WS14 is NA in fields. Made it 3 (Unknown).
+    Command : data_final2 = within(data_final, {WS14 = ifelse(is.na(data_final$WS14), 3, data_final$WS14)})
+
+#FUCKED UP. industry codes go from 15 to 17 '-_-.
+        Command : WS5notNA92 = within(WS5notNA92, {
+            WS5 = ifelse(WS5notNA92$WS5 == 17 , 16 , WS5notNA92$WS5)
+            )};
+        WS5notNA92 = within(WS5notNA92, {
+            WS5 = ifelse(WS5notNA92$WS5 == 18 , 17 , WS5notNA92$WS5)
+            )};
+#Removed NA rows(count = 4) from data_final.
+    Command : data_final = data_final[complete.cases(data_final[, "WS5"]),]
+#WS14 is NA in fields. Made it 3 (Unknown).
+    Command : data_final2 = within(data_final, {WS14 = ifelse(is.na(data_final$WS14), 3, data_final$WS14)})
+#Exported as csv. Fuck. Done.

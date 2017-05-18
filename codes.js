@@ -1,41 +1,3 @@
-var stateids = {
-    "Jammu & Kashmir": 1,
-    "Himachal Pradesh": 2,
-    "Punjab": 3,
-    "Chandigarh": 4,
-    "Uttarakhand": 5,
-    "Haryana": 6,
-    "Delhi": 7,
-    "Rajasthan": 8,
-    "Uttar Pradesh": 9,
-    "Bihar": 10,
-    "Sikkim": 11,
-    "Arunachal Pradesh": 12,
-    "Nagaland": 13,
-    "Manipur": 14,
-    "Mizoram": 15,
-    "Tripura": 16,
-    "Meghalaya": 17,
-    "Assam": 18,
-    "West Bengal": 19,
-    "Jharkhand": 20,
-    "Orissa": 21,
-    "Chhattisgarh": 22,
-    "Madhya Pradesh": 23,
-    "Gujarat": 24,
-    "Daman & Diu": 25,
-    "Dadra+Nagar Haveli": 26,
-    "Maharashtra": 27,
-    "Andhra Pradesh": 28,
-    "Karnataka": 29,
-    "Goa": 30,
-    "Lakshadweep": 31,
-    "Kerala": 32,
-    "Tamil Nadu": 33,
-    "Pondicherry": 34,
-    "Anadman/Nicobar": 35
-};
-
 var industry_code_names = {
     0: "Agriculture",
     1: "HFF",
@@ -46,8 +8,16 @@ var industry_code_names = {
     6: "Wholesale",
     7: "Retail",
     8: "Transport",
-    9: "Others"
-};
+    9: "Others",
+    10: "Business",
+    11: "Retired"
+    12: "Housework",
+    13: "Student",
+    14: "Unemployed",
+    15: "Too Young/Unfit",
+    16: "Public Admin", // WS5 90
+    17: "Education" //WS5 92
+}
 
 var industry_codes = {
     "0": 0,
@@ -140,9 +110,9 @@ var industry_codes = {
     "87": 9,
     "88": 9,
     "89": 9,
-    "90": 9,
+    "90": 18, //Public admin, high in Brahmin/Christians
     "91": 9,
-    "92": 9,
+    "92": 17, //Education, high in Brahmin/Christians
     "93": 9,
     "94": 9,
     "95": 9,
@@ -179,7 +149,8 @@ var sector_codes = {
     "3": 1,
     "4": 0,
     "5": 0,
-    "6": 2,//other
+    "6": 2,
+    "7": 3,//other
 };
 
 var sector_code_names = {
@@ -187,19 +158,3 @@ var sector_code_names = {
     "1": "Private",
     "2": "Others",
 };
-
-var nodes = [
-    {"node":0, "name": "Government"},
-    {"node":1, "name": "Private"},
-    {"node":2, "name": "Others"},
-    {"node":0, "name": "Agriculture"},
-    {"node":1, "name": "HFF"},
-    {"node":2, "name": "Mining"},
-    {"node":3, "name": "Manufacturing"},
-    {"node":4, "name": "Energy"},
-    {"node":5, "name": "Construction"},
-    {"node":6, "name": "Wholesale"},
-    {"node":7, "name": "Retail"},
-    {"node":8, "name": "Transport"},
-    {"node":9, "name": "Others"},
-]

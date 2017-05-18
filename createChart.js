@@ -45,21 +45,30 @@ function redraw(people) {
             {"node": 0, "name": "Government"},
             {"node": 1, "name": "Private"},
             {"node": 2, "name": "Others"},
-            {"node": 3, "name": "Agriculture"},
-            {"node": 4, "name": "HFF"},
-            {"node": 5, "name": "Mining"},
-            {"node": 6, "name": "Manufacturing"},
-            {"node": 7, "name": "Energy"},
-            {"node": 8, "name": "Construction"},
-            {"node": 9, "name": "Wholesale"},
-            {"node": 10, "name": "Retail"},
-            {"node": 11, "name": "Transport"},
-            {"node": 12, "name": "Others"}
+            {"node": 3, "name": "Unknown"},
+            {"node": 4, "name": "Agriculture"},
+            {"node": 5, "name": "HFF"},
+            {"node": 6, "name": "Mining"},
+            {"node": 7, "name": "Manufacturing"},
+            {"node": 8, "name": "Energy"},
+            {"node": 9, "name": "Construction"},
+            {"node": 10, "name": "Wholesale"},
+            {"node": 11, "name": "Retail"},
+            {"node": 12, "name": "Transport"},
+            {"node": 13, "name": "Others"},
+            {"node": 14, "name": "Business"},
+            {"node": 15, "name": "Retired}"
+            {"node": 16, "name": "Housework"},
+            {"node": 17, "name": "Student"},
+            {"node": 18, "name": "Unemployed"},
+            {"node": 19, "name": "Too Young/Unfit"},
+            {"node": 20, "name": "Public Admin"},
+            {"node": 21, "name": "Education"}
         ];
 
         for (var i = data.length - 1; i >= 0; i--) {
 
-            link_hash = sector_codes[data[i]["WS14"]] + "-" + (+industry_codes[data[i]["WS5"]] + 3);
+            link_hash = sector_codes[data[i]["WS14"]] + "-" + (+data[i]["WS5"] + 4);
             if(!temp_links[link_hash])
                 temp_links[link_hash] = {"name": link_hash, "value": 1};
 
@@ -90,8 +99,10 @@ function redraw(people) {
         var education = document.getElementById("education_choice").value;
         var rnc = document.getElementById("rnc_choice").value;
 
-        var chosen = [age, sex, education, rnc];
-        var choice_labels = ["RO5", "RO3", "EDUC7", "GROUPS"];
+        createAgeData(people, age);
+
+        var chosen = [sex, education, rnc];
+        var choice_labels = ["RO3", "EDUC7", "GROUPS"];
 
         var entered_choice_labels = chosen.reduce(function(acc, choice, i) {
             if (choice != "All")
