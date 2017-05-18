@@ -10,8 +10,7 @@ function redraw(people) {
     var people;
 
     q = d3.queue();
-    q.defer(d3.csv, "final.csv")
-
+    q.defer(d3.csv, "data_final.csv");
     q.await(function(error, data) {
         people = data;
         createSankey(people);
@@ -57,7 +56,7 @@ function redraw(people) {
             {"node": 12, "name": "Transport"},
             {"node": 13, "name": "Others"},
             {"node": 14, "name": "Business"},
-            {"node": 15, "name": "Retired}"
+            {"node": 15, "name": "Retired"},
             {"node": 16, "name": "Housework"},
             {"node": 17, "name": "Student"},
             {"node": 18, "name": "Unemployed"},
@@ -93,13 +92,30 @@ function redraw(people) {
         return sankeyJson;
     }
 
+    function createAgeData(){
+    	var age = document.getElementById("age_choice").value;
+    	if(age == "All")
+    		return people;
+    	else{
+    		age = age.split("-");
+    		var age_lower = +age[0];
+    		var age_upper = +age[1];
+    		var ageData = d3.nest().key(function(d){ return d["RO5"]; }).entries(people);
+    		ageData = ageData.reduce(function(final, age_object) {
+    			if(+age_object["key"] < age_upper && +age_object["key"] >= age_lower)
+    				final = final.concat(age_object["values"]);
+    			return final;
+    		}, []);
+    		return ageData;
+    	}
+    }
+
     function createData() {
-        var age = document.getElementById("age_choice").value;
         var sex = document.getElementById("sex_choice").value;
         var education = document.getElementById("education_choice").value;
         var rnc = document.getElementById("rnc_choice").value;
 
-        createAgeData(people, age);
+        var ageData = createAgeData();
 
         var chosen = [sex, education, rnc];
         var choice_labels = ["RO3", "EDUC7", "GROUPS"];
@@ -116,7 +132,7 @@ function redraw(people) {
             });
         }, d3.nest());
 
-        sankeyData = sankeyData.entries(people);
+        sankeyData = sankeyData.entries(ageData);
 
         var filter_choices = chosen.filter(function(choice){
             return choice !== "All";
@@ -250,8 +266,10 @@ function redraw(people) {
 
     function createHistogram() {
 
-        var data = createData(people);
-        var max_earnings = d3.max(people, function(person){ return person["WSEARN"]; });
+        var ageData = createAgeData(people);
+    	var data = createData(ageData);
+    	var data_filtered = data.filter(function(person) { return person["WSEARN"] !== "NA"; });
+        var max_earnings = d3.max(data_filtered, function(person){ return person["WSEARN"]; });
         var min_earnings = 0;
 
         var width = 600;
@@ -281,7 +299,7 @@ function redraw(people) {
 
         var bins = histogram(data);
 
-        var total = data.length;
+        var total = data_filtered.length;
 
         var bound = histogram_g.selectAll("rect")
             .data(bins, function(d, i) { return i; });
@@ -289,7 +307,7 @@ function redraw(people) {
         bound.enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", function(d) { debugger; return xScale(d.x0); })
+            .attr("x", function(d) { return xScale(d.x0); })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
             .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })
@@ -297,7 +315,7 @@ function redraw(people) {
 
         bound
             .transition()
-            .attr("x", function(d) { debugger; return xScale(d.x0); })
+            .attr("x", function(d) { return xScale(d.x0); })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
             .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })

@@ -10,7 +10,7 @@ var industry_code_names = {
     8: "Transport",
     9: "Others",
     10: "Business",
-    11: "Retired"
+    11: "Retired",
     12: "Housework",
     13: "Student",
     14: "Unemployed",
