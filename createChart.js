@@ -203,6 +203,7 @@ function redraw(people) {
 
 		links.exit()
 			.transition()
+			.duration(500)
 			.style("opacity", 1e-6)
 			.remove();
 
@@ -214,6 +215,7 @@ function redraw(people) {
 
 		links
 			.transition()
+			.duration(500)
 			.attr("d", path)
 			.style("stroke-width", function(d){ return Math.max(1, d.dy); });
 
@@ -239,6 +241,7 @@ function redraw(people) {
 
         nodes.exit()
             .transition()
+            .duration(500)
             .attr("height", 0)
             .remove();
 
@@ -251,6 +254,7 @@ function redraw(people) {
 
         nodes
         	.transition()
+        	.duration(500)
         	.attr("y", function(d){ return d.y; })
         	.attr("height", function(d){ return d.dy;})
 
@@ -322,6 +326,7 @@ function redraw(people) {
 
         bound.exit()
         	.transition()
+        	.duration(500)
         	.style("opacity", 0);
 
         bound.exit()
@@ -329,6 +334,7 @@ function redraw(people) {
 
         bound
             .transition()
+            .duration(500)
             .attr("x", function(d) { return xScale(d.x0) + 1; })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
@@ -341,11 +347,13 @@ function redraw(people) {
                 .attr("class", "x-axis")
                 .attr("transform", "translate(0, " + height + ")")
                 .transition()
+                .duration(500)
                 .call(d3.axisBottom(xScale));
 
             histogram_g.append("g")
                 .attr("class", "y-axis")
                 .transition()
+                .duration(500)
                 .call(d3.axisLeft(yScale));
         }
 
