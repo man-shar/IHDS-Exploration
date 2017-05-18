@@ -150,11 +150,12 @@ var sector_codes = {
     "4": 0,
     "5": 0,
     "6": 2,
-    "7": 3,//other
+    "7": 3,//unknown
 };
 
 var sector_code_names = {
     "0": "Government",
     "1": "Private",
     "2": "Others",
+    "3": "Unknown"
 };

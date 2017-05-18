@@ -125,20 +125,27 @@ function redraw(people) {
                 acc.push(choice_labels[i]);
             return acc;
         }, []);
-        
-        var sankeyData = entered_choice_labels.reduce(function(acc, choice_label){
-            return acc.key(function(d) {
-                return d[choice_label];
-            });
-        }, d3.nest());
 
-        sankeyData = sankeyData.entries(ageData);
+        var matchJson = {};
 
         var filter_choices = chosen.filter(function(choice){
             return choice !== "All";
         });
 
-        var final_data = getData(sankeyData, filter_choices, 0);
+        var sankeyData = entered_choice_labels.reduce(function(acc, choice_label, i){
+        	matchJson[choice_label] = filter_choices[i];
+            return acc.key(function(d) {
+                return d[choice_label];
+            });
+        }, d3.nest());
+
+        // sankeyData = sankeyData.entries(ageData);
+
+        // debugger;
+
+        //var final_data = getData(sankeyData, filter_choices, 0);
+
+        var final_data = _.where(ageData, matchJson);
 
         return final_data;
     }
@@ -232,7 +239,7 @@ function redraw(people) {
 
         nodes.exit()
             .transition()
-            .style("opacity", 1e-6)
+            .attr("height", 0)
             .remove();
 
         nodes
@@ -269,7 +276,7 @@ function redraw(people) {
         var ageData = createAgeData(people);
     	var data = createData(ageData);
     	var data_filtered = data.filter(function(person) { return person["WSEARN"] !== "NA"; });
-        var max_earnings = d3.max(data_filtered, function(person){ return person["WSEARN"]; });
+        var max_earnings = d3.max(people, function(person){ if(person["WSEARN"] == "NA"){ return 0; } return +person["WSEARN"]; });
         var min_earnings = 0;
 
         var width = 600;
@@ -277,13 +284,13 @@ function redraw(people) {
 
         var histogram_svg, histogram_g;
 
-        var yScale = d3.scaleLinear().range([height, 0]).domain([0, 80]),
+        var yScale = d3.scaleLinear().range([height, 0]).domain([0, 100]),
             xScale = d3.scaleLinear().range([0, width - 40]).domain([0, max_earnings]);
 
         var histogram = d3.histogram()
             .value(function(d) { return +d["WSEARN"]; })
             .domain(xScale.domain())
-            .thresholds(xScale.ticks(10));
+            .thresholds(xScale.ticks(20));
 
         if(d3.select(".histogram-container").select("svg").empty())
         {
@@ -297,7 +304,7 @@ function redraw(people) {
             histogram_g = histogram_svg.select("g");
         }
 
-        var bins = histogram(data);
+        var bins = histogram(data_filtered);
 
         var total = data_filtered.length;
 
@@ -307,15 +314,22 @@ function redraw(people) {
         bound.enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", function(d) { return xScale(d.x0); })
+            .attr("x", function(d) { return xScale(d.x0) + 1; })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
             .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })
             .attr("fill", "#aaa");
 
+        bound.exit()
+        	.transition()
+        	.style("opacity", 0);
+
+        bound.exit()
+            .remove();
+
         bound
             .transition()
-            .attr("x", function(d) { return xScale(d.x0); })
+            .attr("x", function(d) { return xScale(d.x0) + 1; })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
             .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })
