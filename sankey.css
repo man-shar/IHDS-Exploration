@@ -1,24 +1,49 @@
 .node rect {
-  cursor: move;
-  fill-opacity: .9;
-  shape-rendering: crispEdges;
+    cursor: move;
+    fill-opacity: .9;
+    shape-rendering: crispEdges;
 }
 
 .node text {
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
 }
 
 .link {
-  fill: none;
-  stroke: #000;
-  stroke-opacity: .2;
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
 }
 
 .link:hover {
-  stroke-opacity: .5;
+    stroke-opacity: .5;
 }
 
 body > div {
-	text-align: center;
+    text-align: center;
+}
+
+.node-label {
+    dominant-baseline: central;
+    font-size: 11px;
+    text-shadow: -1px -1px 1px #ffffff, -1px 0px 1px #ffffff, -1px 1px 1px #ffffff, 0px -1px 1px #ffffff, 0px 1px 1px #ffffff, 1px -1px 1px #ffffff, 1px 0px 1px #ffffff, 1px 1px 1px #ffffff;
+}
+
+.sankey-container, .histogram-container {
+    display: inline-block
+}
+
+.axis-label {
+    dominant-baseline: central;
+    font-size: 11px;
+    text-shadow: -1px -1px 1px #ffffff, -1px 0px 1px #ffffff, -1px 1px 1px #ffffff, 0px -1px 1px #ffffff, 0px 1px 1px #ffffff, 1px -1px 1px #ffffff, 1px 0px 1px #ffffff, 1px 1px 1px #ffffff;
+    text-anchor: middle;
+}
+
+.y-axis-label {
+    transform-origin: center;
+}
+
+svg {
+    overflow: visible;
 }

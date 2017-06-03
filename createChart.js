@@ -8,12 +8,15 @@ groups -> religion and caste
 function redraw(people) {
     
     var people;
+    var sankeySvg;
 
     q = d3.queue();
     q.defer(d3.csv, "data_final.csv");
     q.await(function(error, data) {
         people = data;
+
         createSankey(people);
+
         createHistogram(people);
     });
 
@@ -25,8 +28,10 @@ function redraw(people) {
                 if(sankeyData[i]["key"] === filter_choices[level])
                 {
                     var final_data =  getData(sankeyData[i]["values"], filter_choices, ++level);
+
                     if(final_data === "No Match")
                         return "No Match";
+
                     return final_data;
                 }
             }
@@ -38,6 +43,7 @@ function redraw(people) {
     function createSankeyJson(data) {
 
         var sankeyJson = {"nodes": [], "links": []};
+
         var temp_links = {};
 
         sankeyJson.nodes  = [
@@ -176,15 +182,29 @@ function redraw(people) {
 
         if(sankeyData === "No Match"){
     	    return "No People";
-    	    // d3.select(".sankey-container").select("svg").selectAll("*").remove
+    	    d3.select(".sankey-container").select("svg").selectAll("*").remove
         }
 
         var sankeyJson = createSankeyJson(sankeyData);
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10},
-            width = 700 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom,
+            width = 550 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom,
             color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        d3.select(".sankey-container")
+            .selectAll("svg")
+            .data(["sankey-svg"], function(d) {
+                return "sankey-svg";
+            })
+            .enter()
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var sankeySvg = d3.select(".sankey-container").select("svg");
 
         var sankey = d3.sankey()
             .nodeWidth(36)
@@ -193,27 +213,12 @@ function redraw(people) {
 
         path = sankey.link();
 
-        var svg, links, nodes;
-
-        if(d3.select(".sankey-container").select("svg").empty())
-        {
-            svg = d3.select(".sankey-container").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        }
-
-        else{
-            svg = d3.select(".sankey-container").select("svg").select("g");
-        }
-
         sankey
             .nodes(sankeyJson.nodes)
             .links(sankeyJson.links)
             .layout(10);
 
-        var linkGBound = svg.selectAll(".links-g")
+        var linkGBound = sankeySvg.selectAll(".links-g")
             .data(["links-g"], function() {
             	return ["links-g"];
             });
@@ -231,25 +236,32 @@ function redraw(people) {
 
 		linksBound.exit()
 			.transition()
-			.duration(500)
+			.duration(700)
+            .style("opacity", 1e6)
 			.remove();
 
 		linksBound.enter()
 		    .append("path")
 			.attr("class", "link")
+            .attr("d", path)
+            .style("stroke-width", function(d){ return Math.max(1, d.dy); })
 			.append("title")
             .text(function(d) {
-                return d.source.name + " → " + d.target.name + "\n" + d.value;
+                return d.source.name + " -> " + d.target.name + "\n" + d.value;
             });
 
-        d3.selectAll(".link")
-            .style("stroke-width", function(d){ return Math.max(1, d.dy); })
-			.transition()
-			.duration(500)
-			.attr("d", path);
-			
+        linksBound
+            .transition()
+            .duration(700)
+            .attr("d", path)
+            .style("stroke-width", function(d){ return Math.max(1, d.dy); });
 
-        var nodeGBound = svg.selectAll(".nodes-g")
+        linksBound.select("title")
+            .text(function(d) {
+                return d.source.name + " -> " + d.target.name + "\n" + d.value;
+            });			
+
+        var nodeGBound = sankeySvg.selectAll(".nodes-g")
             .data(["nodes-g"], function(d) {
                 return d;
             });
@@ -266,7 +278,7 @@ function redraw(people) {
 
         nodesBound.exit()
             .transition()
-            .duration(500)
+            .duration(700)
             .attr("height", 0)
             .remove();
 
@@ -286,9 +298,41 @@ function redraw(people) {
 
         d3.selectAll(".node")
             .transition()
-            .duration(500)
+            .duration(700)
             .attr("y", function(d){ return d.y; })
             .attr("height", function(d){ return d.dy;});
+
+        var nodeLabelsBound = sankeySvg.selectAll(".node-label")
+            .data(sankeyJson.nodes, function(d) {
+                return d.name + d.x;
+            });
+
+        nodeLabelsBound
+            .enter()
+            .append("text")
+            .attr("class", "node-label")
+            .text(function(d) {
+                return d.name;
+            })
+            .attr("x", function(d) {
+                if(d.x >= d.dx)
+                {
+                    d3.select(this).style("text-anchor", "end");
+                    return d.x - 3;
+                }
+
+                return d.x + d.dx + 3;
+            })
+            .merge(nodeLabelsBound)
+            .transition()
+            .duration(700)
+            .attr("y", function(d) {
+                return d.y + d.dy / 2;
+            });
+
+
+        nodeLabelsBound.exit()
+            .remove();
         }
 
 
@@ -301,13 +345,14 @@ function redraw(people) {
         var max_earnings = d3.max(people, function(person){ if(person["WSEARN"] == "NA"){ return 0; } return +person["WSEARN"]; });
         var min_earnings = 0;
 
-        var width = 600;
+        var width = 550;
         var height = 400;
+        var margin = 20;
 
         var histogram_svg, histogram_g;
 
         var yScale = d3.scaleLinear().range([height, 0]).domain([0, 100]),
-            xScale = d3.scaleLinear().range([0, width - 40]).domain([0, max_earnings]);
+            xScale = d3.scaleLinear().range([0, width]).domain([0, max_earnings]);
 
         var histogram = d3.histogram()
             .value(function(d) { return +d["WSEARN"]; })
@@ -323,8 +368,9 @@ function redraw(people) {
         histogram_svg = histogram_svgBound
             .enter()
             .append("svg")
-            .attr("height", height + 60)
-            .attr("width", width + 60)
+            .attr("height", height + 3 * margin)
+            .attr("width", width + 3 * margin)
+            .attr("class", "histogram-container")
             .merge(histogram_svgBound);
 
         histogram_g = histogram_svg.selectAll(".histogram-chart")
@@ -333,13 +379,14 @@ function redraw(people) {
             })
             .enter()
             .append("g")
-            .attr("transform", "translate(30, 30)");
+            .attr("class", "histogram-chart")
+            .attr("transform", "translate(" + (2 * margin) + ", " + margin + ")");
 
         var bins = histogram(data_filtered);
 
         var total = data_filtered.length;
 
-        var histogramBound = histogram_g.selectAll("rect")
+        var histogramBound = d3.select(".histogram-chart").selectAll("rect")
             .data(bins, function(d, i) { return i; });
 
         histogramBound.enter()
@@ -348,7 +395,7 @@ function redraw(people) {
             .attr("fill", "#aaa")
             .merge(histogramBound)
             .transition()
-            .duration(500)
+            .duration(700)
             .attr("x", function(d) { return xScale(d.x0) + 1; })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
@@ -356,20 +403,20 @@ function redraw(people) {
 
         histogramBound.exit()
         	.transition()
-        	.duration(500)
+        	.duration(700)
         	.style("opacity", 0)
             .remove();
 
-        histogram_g.selectAll(".x-axis")
+        histogram_svg.selectAll(".x-axis")
             .data(["x-axis"], function(d) {
                 return d;
             })
             .enter()
             .append("g")
             .attr("class", "x-axis")
-            .attr("transform", "translate(0, " + height + ")")
+            .attr("transform", "translate(" + (2 * margin) + ", " + (height + margin) + ")")
             .transition()
-            .duration(500)
+            .duration(700)
             .call(d3.axisBottom(xScale).ticks(15).tickFormat(function(d) {
             if((d / 1000).toFixed(0) > 100)
                 return (d / 100000).toFixed(1) + "L";
@@ -377,16 +424,39 @@ function redraw(people) {
                 return (d / 1000).toFixed(0) + "k";
         }));
 
-        histogram_g.selectAll(".y-axis")
+        histogram_svg.selectAll(".y-axis")
             .data(["y-axis"], function(d) {
                 return d;
             })
             .enter()
             .append("g")
             .attr("class", "y-axis")
+            .attr("transform", "translate(" + (2 * margin) + ", " + margin + ")")
             .transition()
-            .duration(500)
+            .duration(700)
             .call(d3.axisLeft(yScale));
+
+        histogram_svg.selectAll(".y-axis-label")
+            .data(["y-axis-label"], function(d) {
+                return d;
+            })
+            .enter()
+            .append("text")
+            .attr("class", "y-axis-label axis-label")
+            .attr("y", 0)
+            .attr("x", 0 - height / 2)
+            .text("Percentage of people")
+            .attr("transform", "rotate(-90)");
+
+        histogram_svg.selectAll(".x-axis-label")
+            .data(["x-axis-label"], function(d) {
+                return d;
+            })
+            .enter()
+            .append("text")
+            .attr("class", "x-axis-label axis-label")
+            .attr("transform", "translate(" + (margin + (width) / 2) + ", " + (height + 2 * margin + 10) + ")" )
+            .text("Yearly Earning");
 
     }
 
