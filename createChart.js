@@ -81,6 +81,7 @@ function redraw(people) {
             var nodes = temp_links[hash]["name"].split("-");
 
             var source = nodes[0];
+
             var target = nodes[1];
 
             var linkForJson = {
@@ -94,21 +95,44 @@ function redraw(people) {
 
     function createAgeData(){
     	var age = document.getElementById("age_choice").value;
-    	if(age == "All")
-    		return people;
+
+        var age_upper, age_lower;
+
+    	if(age == "All"){
+    		age_lower = 18;
+
+            age_upper = 200;
+        }
+
+        else if(age == "Above 60"){
+            age_lower = 60;
+
+            age_upper = 200;
+        }
+
+
     	else{
     		age = age.split("-");
-    		var age_lower = +age[0];
-    		var age_upper = +age[1];
-    		var ageData = d3.nest().key(function(d){ return d["RO5"]; }).entries(people);
-    		ageData = ageData.reduce(function(final, age_object) {
-    			if(+age_object["key"] < age_upper && +age_object["key"] >= age_lower)
-    				final = final.concat(age_object["values"]);
-    			return final;
-    		}, []);
-    		return ageData;
+
+    		age_lower = +age[0];
+
+    		age_upper = +age[1];
+        }
+
+		var ageData = d3.nest().key(function(d){ return d["RO5"]; }).entries(people);
+
+		ageData = ageData.reduce(function(final, age_object) {
+
+			if(+age_object["key"] <= age_upper && +age_object["key"] >= age_lower)
+
+				final = final.concat(age_object["values"]);
+
+			return final;
+
+		}, []);
+
+		return ageData;
     	}
-    }
 
     function createData() {
         var sex = document.getElementById("sex_choice").value;
@@ -117,20 +141,22 @@ function redraw(people) {
 
         var ageData = createAgeData();
 
-        var chosen = [sex, education, rnc];
-        var choice_labels = ["RO3", "EDUC7", "GROUPS"];
+        var chosen = [sex, education, rnc]; //what the user has entered
+        var choice_labels = ["RO3", "EDUC7", "GROUPS"]; //labels for our dropdowns as in the Codebook
+
+        var filter_choices = []; //contains the values enterred by the user which are not "All".
+
+        //find the labels that have something other than "All" and also push those enterred choices to filter_choices.
 
         var entered_choice_labels = chosen.reduce(function(acc, choice, i) {
-            if (choice != "All")
+            if (choice != "All"){
                 acc.push(choice_labels[i]);
+                filter_choices.push(choice);
+            }
             return acc;
         }, []);
 
         var matchJson = {};
-
-        var filter_choices = chosen.filter(function(choice){
-            return choice !== "All";
-        });
 
         var sankeyData = entered_choice_labels.reduce(function(acc, choice_label, i){
         	matchJson[choice_label] = filter_choices[i];
@@ -139,13 +165,7 @@ function redraw(people) {
             });
         }, d3.nest());
 
-        // sankeyData = sankeyData.entries(ageData);
-
-        // debugger;
-
-        //var final_data = getData(sankeyData, filter_choices, 0);
-
-        var final_data = _.where(ageData, matchJson);
+        var final_data = _.where(ageData, matchJson); // final data to make sankey. Not a JSON yet. That happens in createSankeyJson().
 
         return final_data;
     }
@@ -154,8 +174,10 @@ function redraw(people) {
 
         var sankeyData = createData();
 
-        if(sankeyData === "No Match")
-    	    return "No People"
+        if(sankeyData === "No Match"){
+    	    return "No People";
+    	    // d3.select(".sankey-container").select("svg").selectAll("*").remove
+        }
 
         var sankeyJson = createSankeyJson(sankeyData);
 
@@ -169,7 +191,7 @@ function redraw(people) {
             .nodePadding(5)
             .size([width, height]);
 
-        var path = sankey.link();
+        path = sankey.link();
 
         var svg, links, nodes;
 
@@ -191,78 +213,67 @@ function redraw(people) {
             .links(sankeyJson.links)
             .layout(10);
 
-        if(d3.select(".links_g").empty()) {
-            links = svg.append("g").attr("class", "links_g").selectAll(".link")
-                .data(sankeyJson.links, function(d) { var key = d.source.node + "-" + d.target.node; return key; });
-        }
+        var linkGBound = svg.selectAll(".links-g")
+            .data(["links-g"], function() {
+            	return ["links-g"];
+            });
 
-        else
-        {
-            links = d3.select(".links_g").selectAll(".link").data(sankeyJson.links, function(d) { var key = d.source.node + "-" + d.target.node; return key; });
-        }
+        var linkG = linkGBound
+            .enter()
+            .append("g")
+            .attr("class", "links-g")
+            .merge(linkGBound);
 
-		links.exit()
+        var linksBound = linkG.selectAll(".link")
+            .data(sankeyJson.links, function(d) {
+            	return d.source.node + "-" + d.target.node;
+            });
+
+		linksBound.exit()
 			.transition()
 			.duration(500)
-			.style("opacity", 1e-6)
 			.remove();
 
-		links
-		    .select("title")
-		    .text(function(d) {
-		    	return d.source.name + " → " + d.target.name + "\n" + d.value;
-		    });
-
-		links
-			.transition()
-			.duration(500)
-			.attr("d", path)
-			.style("stroke-width", function(d){ return Math.max(1, d.dy); });
-
-
-		links.enter().append("path")
+		linksBound.enter()
+		    .append("path")
 			.attr("class", "link")
-			.attr("d", path)
-			.style("stroke-width", function(d){ return Math.max(1, d.dy); })
 			.append("title")
             .text(function(d) {
                 return d.source.name + " → " + d.target.name + "\n" + d.value;
             });
 
-        if(d3.select(".nodes_g").empty()) {
-            nodes = svg.append("g").attr("class", "nodes_g").selectAll(".node")
-                .data(sankeyJson.nodes, function(d) { var key = d.node; return key;});
-        }
+        d3.selectAll(".link")
+            .style("stroke-width", function(d){ return Math.max(1, d.dy); })
+			.transition()
+			.duration(500)
+			.attr("d", path);
+			
 
-        else
-        {
-            nodes = d3.select(".nodes_g").selectAll(".node").data(sankeyJson.nodes, function(d) { var key = d.node; return key; });
-        }
+        var nodeGBound = svg.selectAll(".nodes-g")
+            .data(["nodes-g"], function(d) {
+                return d;
+            });
 
-        nodes.exit()
+        var nodeG = nodeGBound
+            .enter()
+            .append("g")
+            .attr("class", "nodes-g")
+            .merge(nodeGBound);
+
+        var nodesBound = nodeG
+            .selectAll(".node")
+            .data(sankeyJson.nodes, function(d) { var key = d.node; return key;});
+
+        nodesBound.exit()
             .transition()
             .duration(500)
             .attr("height", 0)
             .remove();
 
-        nodes
-            .select("title")
-            .text(function(d) { 
-                return d.name + "\n" + d.value; 
-            });
-
-
-        nodes
-        	.transition()
-        	.duration(500)
-        	.attr("y", function(d){ return d.y; })
-        	.attr("height", function(d){ return d.dy;})
-
-        nodes.enter().append("rect")
+        nodesBound.enter()
+            .append("rect")
         	.attr("class", "node")
         	.attr("x", function(d){ return d.x; })
-        	.attr("y", function(d){ return d.y; })
-        	.attr("height", function(d){ return d.dy;})
         	.attr("width", sankey.nodeWidth())
         	.style("fill", function(d) { 
                 return d.color = color(d.name.replace(/ .*/, "")); })
@@ -270,7 +281,14 @@ function redraw(people) {
             .style("stroke-width", 0.4)
             .append("title")
             .text(function(d) { 
-                return d.name + "\n" + d.value; });
+                return d.name + "\n" + d.value;
+            });
+
+        d3.selectAll(".node")
+            .transition()
+            .duration(500)
+            .attr("y", function(d){ return d.y; })
+            .attr("height", function(d){ return d.dy;});
         }
 
 
@@ -296,66 +314,79 @@ function redraw(people) {
             .domain(xScale.domain())
             .thresholds(xScale.ticks(20));
 
-        if(d3.select(".histogram-container").select("svg").empty())
-        {
+        histogram_svgBound = d3.select(".histogram-container")
+            .selectAll("svg")
+            .data(["histogram-svg"], function(d) {
+                return d;
+            });
 
-            histogram_svg = d3.select(".histogram-container").append("svg").attr("height", height + 60).attr("width", width + 60);
-            histogram_g = histogram_svg.append("g").attr("transform", "translate(30, 30)");
-        }
+        histogram_svg = histogram_svgBound
+            .enter()
+            .append("svg")
+            .attr("height", height + 60)
+            .attr("width", width + 60)
+            .merge(histogram_svgBound);
 
-        else{
-            histogram_svg = d3.select(".histogram-container").select("svg");
-            histogram_g = histogram_svg.select("g");
-        }
+        histogram_g = histogram_svg.selectAll(".histogram-chart")
+            .data(["histogram-chart"], function(d) {
+                return d;
+            })
+            .enter()
+            .append("g")
+            .attr("transform", "translate(30, 30)");
 
         var bins = histogram(data_filtered);
 
         var total = data_filtered.length;
 
-        var bound = histogram_g.selectAll("rect")
+        var histogramBound = histogram_g.selectAll("rect")
             .data(bins, function(d, i) { return i; });
 
-        bound.enter()
+        histogramBound.enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", function(d) { return xScale(d.x0) + 1; })
-            .attr("y", function(d) { return yScale((d.length/total) * 100) })
-            .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
-            .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })
-            .attr("fill", "#aaa");
-
-        bound.exit()
-        	.transition()
-        	.duration(500)
-        	.style("opacity", 0);
-
-        bound.exit()
-            .remove();
-
-        bound
+            .attr("fill", "#aaa")
+            .merge(histogramBound)
             .transition()
             .duration(500)
             .attr("x", function(d) { return xScale(d.x0) + 1; })
             .attr("y", function(d) { return yScale((d.length/total) * 100) })
             .attr("width", function(d) { return xScale(d.x1 - d.x0) - 1; })
-            .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) })
-            .attr("fill", "#aaa");
+            .attr("height", function(d) { return height - (yScale((d.length/total) * 100)) });
 
-        if (histogram_g.select(".x-axis").empty())
-        {
-            histogram_g.append("g")
-                .attr("class", "x-axis")
-                .attr("transform", "translate(0, " + height + ")")
-                .transition()
-                .duration(500)
-                .call(d3.axisBottom(xScale));
+        histogramBound.exit()
+        	.transition()
+        	.duration(500)
+        	.style("opacity", 0)
+            .remove();
 
-            histogram_g.append("g")
-                .attr("class", "y-axis")
-                .transition()
-                .duration(500)
-                .call(d3.axisLeft(yScale));
-        }
+        histogram_g.selectAll(".x-axis")
+            .data(["x-axis"], function(d) {
+                return d;
+            })
+            .enter()
+            .append("g")
+            .attr("class", "x-axis")
+            .attr("transform", "translate(0, " + height + ")")
+            .transition()
+            .duration(500)
+            .call(d3.axisBottom(xScale).ticks(15).tickFormat(function(d) {
+            if((d / 1000).toFixed(0) > 100)
+                return (d / 100000).toFixed(1) + "L";
+            else
+                return (d / 1000).toFixed(0) + "k";
+        }));
+
+        histogram_g.selectAll(".y-axis")
+            .data(["y-axis"], function(d) {
+                return d;
+            })
+            .enter()
+            .append("g")
+            .attr("class", "y-axis")
+            .transition()
+            .duration(500)
+            .call(d3.axisLeft(yScale));
 
     }
 

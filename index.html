@@ -7,8 +7,8 @@
 
 </head>
 <body>
-	<div>
-	    <div>
+	<div class="main-container">
+	    <div class="options-container">
 		    <select id="age_choice" onChange="makeChart.createSankey(); makeChart.createHistogram()">
 			    <option>
 				    <label value="All">All</label>
@@ -21,6 +21,12 @@
 			    </option>
 			    <option value="40-49">
 				    <label>40-49</label>
+			    </option>
+			    <option value="50-59">
+				    <label>50-59</label>
+			    </option>
+			    <option value="Above 60">
+				    <label>Above 60</label>
 			    </option>
 		    </select>
 		    <select id="sex_choice" onChange="makeChart.createSankey(); makeChart.createHistogram()">
@@ -38,11 +44,29 @@
 			    <option>
 				    <label value="All">All</label>
 			    </option>
+			    <option value="0">
+				    <label>none</label>
+			    </option>
+			    <option value="3">
+				    <label>1-4-3</label>
+			    </option>
+			    <option value="5">
+				    <label>primary 5</label>
+			    </option>
+			    <option value="8">
+				    <label>6-9-8</label>
+			    </option>
+			    <option value="10">
+				    <label>Secondary(&11) 10</label>
+			    </option>
+			    <option value="12">
+				    <label>Higher Secondary(&13, 14) 12</label>
+			    </option>
 			    <option value="15">
 				    <label>Graduate</label>
 			    </option>
 			    <option value="16">
-				    <label>Post Graduate</label>
+				    <label>Some Post Graduate</label>
 			    </option>
 		    </select>
 		    <select id="rnc_choice" onChange="makeChart.createSankey(); makeChart.createHistogram();">
